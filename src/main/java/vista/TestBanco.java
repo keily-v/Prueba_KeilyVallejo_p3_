@@ -5,7 +5,7 @@
  */
 package vista;
 
-import dominio.Persona;
+import dominio.Personas;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -16,14 +16,23 @@ import javax.swing.table.DefaultTableModel;
  */
 public class TestBanco extends javax.swing.JFrame {
 
-    ArrayList<Persona> persona = new ArrayList<Persona>();
+    ArrayList<Personas> persona = new ArrayList<Personas>();
     DefaultTableModel modelot = new DefaultTableModel();
-    static double total;
+    private double total;
+    int con = 0;
 
     public TestBanco() {
         initComponents();
         insertar();
 
+    }
+
+    public void mostrarDatos(Personas p) {
+        modelot.insertRow(con, new Object[]{});
+        modelot.setValueAt(p.getCodigo(), con, 0);
+        modelot.setValueAt(p.getNombre(), con, 1);
+        modelot.setValueAt(p.getSaldoin(), con, 2);
+        con++;
     }
 
     public void insertar() {
@@ -42,13 +51,12 @@ public class TestBanco extends javax.swing.JFrame {
     }
 
     public void sumar() {
-
         double suma = 0;
-        for (int i = 0; i < modelot.getRowCount(); i++) {
+        for (int i = 0; i < tabla.getRowCount(); i++) {
             suma = suma + Double.parseDouble(modelot.getValueAt(i, 2).toString());
             txtBanco.setText("$" + suma);
         }
-
+        total = suma;
     }
 
     /**
@@ -60,6 +68,7 @@ public class TestBanco extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        botones = new javax.swing.ButtonGroup();
         jPanel = new javax.swing.JPanel();
         lblCodigo = new javax.swing.JLabel();
         lblEncabezado = new javax.swing.JLabel();
@@ -287,11 +296,12 @@ public class TestBanco extends javax.swing.JFrame {
 
     private void btnInsertarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInsertarActionPerformed
         // TODO add your handling code here:
+
         int codigo = Integer.parseInt(txtCodigo.getText());
         double saldoi = Double.parseDouble(txtSaldoi.getText());
         String nombre = txtNombre.getText();
 
-        Persona per = new Persona(codigo, nombre, saldoi);
+        Personas per = new Personas(codigo, nombre, saldoi);
         persona.add(per);
 
         modelot.setRowCount(0);
@@ -317,6 +327,9 @@ public class TestBanco extends javax.swing.JFrame {
         rbDepositar.setEnabled(true);
         rbEliminar.setEnabled(true);
         rbRetirar.setEnabled(true);
+        botones.add(rbDepositar);
+        botones.add(rbEliminar);
+        botones.add(rbRetirar);
 
     }//GEN-LAST:event_tablaMouseClicked
 
@@ -324,16 +337,29 @@ public class TestBanco extends javax.swing.JFrame {
         // TODO add your handling code here:
         btnProcesar.setEnabled(true);
         txtValor.setEnabled(true);
+        rbEliminar.setEnabled(false);
+        rbDepositar.setEnabled(false);
     }//GEN-LAST:event_rbRetirarActionPerformed
 
     private void btnProcesarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProcesarActionPerformed
         // TODO add your handling code here:
-        double suma = 0;
+        double l = Double.parseDouble(modelot.getValueAt(tabla.getSelectedRow(), 2).toString());
+        Double aumento = Double.parseDouble(txtValor.getText());
+        Double n = 0.0;
+        if (rbDepositar.isSelected()) {
+            n = l + aumento;
+            
 
-        for (int i = 0; i < modelot.getRowCount(); i++) {
-            suma = suma + Double.parseDouble(modelot.getValueAt(i, 2).toString());
-            txtBanco.setText("$" + suma);
+        } else {
+            n = l - aumento;
+            if (n < 0) {
+                n = n * (-1);
+            }
         }
+
+        txtBanco.setText("$" + (n+total));
+        btnProcesar.setEnabled(false);
+        txtValor.setEnabled(false);
 
 
     }//GEN-LAST:event_btnProcesarActionPerformed
@@ -342,20 +368,27 @@ public class TestBanco extends javax.swing.JFrame {
         // TODO add your handling code here:
         btnProcesar.setEnabled(true);
         txtValor.setEnabled(true);
+        rbEliminar.setEnabled(false);
+        rbRetirar.setEnabled(false);
     }//GEN-LAST:event_rbDepositarActionPerformed
 
     private void rbEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbEliminarActionPerformed
         // TODO add your handling code here:
-
         int fselec = tabla.getSelectedRow();
 
-        for (int i = 0; i < persona.size(); i++) {
-            if (fselec >= 0) {
-                modelot.removeRow(fselec);
+        Double valor = Double.parseDouble(tabla.getValueAt(fselec, 2).toString());
+        double totalact = (total - valor);
 
-            }
+        txtBanco.setText("$" + totalact);
+        if (fselec >= 0) {
+            persona.remove(fselec);
+            modelot.removeRow(fselec);
 
         }
+        btnProcesar.setEnabled(false);
+        txtValor.setEnabled(false);
+        rbDepositar.setEnabled(false);
+        rbRetirar.setEnabled(false);
 
     }//GEN-LAST:event_rbEliminarActionPerformed
 
@@ -395,6 +428,7 @@ public class TestBanco extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup botones;
     private javax.swing.JButton btnInsertar;
     private javax.swing.JButton btnProcesar;
     private javax.swing.JLabel jLabel7;

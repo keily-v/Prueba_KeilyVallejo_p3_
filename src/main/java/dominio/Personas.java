@@ -3,17 +3,18 @@ package dominio;
 
 import javax.swing.JTextField;
 
-public class Persona {
+public class Personas {
     
     private String nombre;
     private double saldoin;
     private int codigo;
 
-    public Persona(int  codigo, String nombre, double saldoin ) {
+    public Personas(int  codigo, String nombre, double saldoin ) {
         this.nombre = nombre;
         this.saldoin = saldoin;
         this.codigo = codigo;
     }
+    public Personas(){}
 
     public String getNombre() {
         return nombre;
